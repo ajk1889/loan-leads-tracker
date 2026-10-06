@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Home loan leads</title>
+<style>
+:root {
+  --page: #ffffff;
+  --ink: #1c1b1a;
+  --ink-2: #6b6660;
+  --hairline: #e3e0db;
+  --red: #b3261e;
+}
+html, body { margin: 0; min-height: 100%; }
+body {
+  background: var(--page); color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px; line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+}
+* { -webkit-tap-highlight-color: transparent; }
+.lb-wrap { max-width: 1100px; margin: 0 auto; padding: 14px 14px 40px; }
+.lb-header { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+.lb-header h1 { font-size: 22px; margin: 0; }
+.lb-header .lb-sub { color: var(--ink-2); font-size: 14px; }
+.lb-top { display: flex; gap: 8px; margin: 8px 0 12px; flex-wrap: wrap; align-items: center; }
+.lb-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--hairline); background: transparent; color: var(--ink); font: inherit; cursor: pointer; text-decoration: none; box-sizing: border-box; }
+.lb-btn:disabled { opacity: .45; }
+.lb-primary { background: var(--ink); color: var(--page); border-color: var(--ink); }
+.lb-danger { border-color: var(--red); color: var(--red); }
+.lb-mini { min-height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--hairline); background: transparent; color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; }
+.lb-menu-wrap { position: relative; margin-left: auto; }
+.lb-menu { position: absolute; right: 0; top: 48px; z-index: 20; min-width: 240px; background: var(--page); border: 1px solid var(--hairline); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.15); display: flex; flex-direction: column; overflow: hidden; }
+.lb-menu button { text-align: left; min-height: 48px; padding: 0 16px; background: none; border: 0; border-bottom: 1px solid var(--hairline); font: inherit; color: var(--ink); cursor: pointer; }
+.lb-menu button:last-child { border-bottom: 0; }
+.lb-board { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x proximity; margin: 0 -4px; padding: 0 4px 12px; -webkit-overflow-scrolling: touch; align-items: flex-start; }
+.lb-col { flex: 0 0 82%; max-width: 300px; scroll-snap-align: start; border: 1px solid var(--hairline); border-radius: 14px; padding: 10px; min-height: 140px; box-sizing: border-box; }
+.lb-col.is-over { outline: 2px dashed var(--ink); background: rgba(0,0,0,.03); }
+@media (min-width: 768px) { .lb-col { flex-basis: 260px; } }
+.lb-col-h { display: flex; align-items: center; gap: 6px; margin: 0 0 8px; }
+.lb-col-name { flex: 1; text-align: left; background: none; border: 0; padding: 8px 0; min-height: 44px; font: inherit; font-weight: 600; font-size: 15px; color: var(--ink); cursor: pointer; overflow-wrap: anywhere; }
+.lb-count { color: var(--ink-2); font-size: 14px; }
+.lb-add { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--hairline); background: none; font-size: 22px; color: var(--ink); cursor: pointer; }
+.lb-newcol { background: none; color: var(--ink-2); font: inherit; cursor: pointer; border-style: dashed; min-height: 80px; }
+.lb-empty { color: var(--ink-2); font-size: 13px; margin: 4px 0; }
+.lb-card { display: flex; border: 1px solid var(--hairline); border-radius: 12px; margin-bottom: 8px; background: var(--page); }
+.lb-card.is-drag { opacity: .35; }
+.lb-card-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; text-align: left; padding: 10px; background: none; border: 0; font: inherit; color: var(--ink); cursor: pointer; min-height: 44px; }
+.lb-name { font-weight: 600; overflow-wrap: anywhere; }
+.lb-meta { font-size: 13px; color: var(--ink-2); overflow-wrap: anywhere; }
+a.lb-call-inline { font-size: 13px; color: var(--ink); font-weight: 600; text-decoration: underline; width: fit-content; padding: 2px 0; }
+.lb-date { font-size: 13px; font-weight: 600; margin-top: 2px; }
+.lb-late { color: var(--red); }
+.lb-notes-n { font-size: 12px; color: var(--ink-2); }
+.lb-handle { width: 48px; display: flex; align-items: center; justify-content: center; border-left: 1px solid var(--hairline); font-size: 22px; color: var(--ink-2); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+.lb-ghost { position: fixed; left: 0; top: 0; z-index: 100; pointer-events: none; padding: 10px 14px; border-radius: 12px; background: var(--ink); color: var(--page); box-shadow: 0 8px 24px rgba(0,0,0,.3); max-width: 200px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.lb-remind { border: 1px solid var(--red); border-radius: 14px; padding: 12px; margin: 0 0 12px; background: rgba(179,38,30,.07); }
+.lb-remind-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.lb-remind-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 6px 0; font-size: 14px; }
+.lb-remind-row > span { flex: 1; min-width: 120px; }
+a.lb-call, a.lb-call:visited { color: var(--page) !important; display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; box-sizing: border-box; border-radius: 10px; background: var(--ink); text-decoration: none; }
+a.lb-btn, a.lb-btn:visited { color: var(--ink); }
+a.lb-btn.lb-primary, a.lb-btn.lb-primary:visited { color: var(--page); }
+.lb-link { background: none; border: 0; padding: 8px 0; font: inherit; color: var(--ink); text-decoration: underline; cursor: pointer; font-weight: 600; text-align: left; }
+.lb-x { background: none; border: 0; font-size: 20px; min-width: 44px; min-height: 44px; cursor: pointer; color: var(--ink); }
+.lb-warn { color: var(--red); font-size: 14px; }
+.lb-cap { color: var(--ink-2); font-size: 13px; }
+.lb-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: flex-end; justify-content: center; z-index: 50; }
+.lb-sheet { background: var(--page); width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto; border-radius: 18px 18px 0 0; padding: 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; }
+@media (min-width: 768px) { .lb-overlay { align-items: center; } .lb-sheet { border-radius: 18px; } }
+.lb-sheet-h { display: flex; justify-content: space-between; align-items: center; font-size: 18px; }
+.lb-sheet label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--ink-2); }
+.lb-sheet input, .lb-sheet select, .lb-sheet textarea { font: inherit; font-size: 16px; color: var(--ink); background: var(--page); border: 1px solid var(--hairline); border-radius: 10px; padding: 10px; min-height: 44px; box-sizing: border-box; width: 100%; }
+.lb-sheet textarea { min-height: 0; }
+.lb-row { display: flex; gap: 8px; align-items: center; }
+.lb-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.lb-note { border-top: 1px solid var(--hairline); padding: 6px 0; }
+.lb-note p { margin: 2px 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.lb-notes { display: flex; flex-direction: column; gap: 6px; }
+.lb-danger-zone { border-top: 1px solid var(--hairline); padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.lb-footer { margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="lb-wrap">
+  <div class="lb-header">
+    <h1>Home loan leads</h1>
+    <span class="lb-sub" id="lb-sub"></span>
+  </div>
+  <div id="app"></div>
+  <p class="lb-cap lb-footer">Drag a card by the ⠿ handle to move it, or open the card and change its column.</p>
+</div>
+<div id="modal-root"></div>
+<script>
+'use strict';
+// ---------- data model ----------
+// Card: [id, name, phone, amount, branch, colId, followDate, notes]
+// Note: [timestampMs, text]   Column: [id, name]
+var LS_KEY = 'loan-board.v1';
+var MAX_COLS = 30;
+var DEFAULT_COLS = [['c1', 'Leads']];
+
+function pad(n) { return String(n).padStart(2, '0'); }
+function iso(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function today() { return iso(new Date()); }
+function inDays(n) { var d = new Date(); d.setDate(d.getDate() + n); return iso(d); }
+function money(n) { return n ? '\u20B9' + Number(n).toLocaleString('en-IN') : ''; }
+function prettyDate(s) {
+  if (!s) return '';
+  var p = s.split('-').map(Number);
+  return new Date(p[0], p[1] - 1, p[2]).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function isDate(s) { return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s); }
+
+var state = { columns: DEFAULT_COLS.map(function(c) { return c.slice(); }), cards: [] };
+var loadErr = '';
+var saveErrVisible = false;
+
+function load() {
+  var raw = null;
+  try { raw = localStorage.getItem(LS_KEY); }
+  catch (e) { loadErr = 'This browser is blocking storage, so your data cannot be saved or read here. Allow site storage (or stop private browsing) to use this app.'; return; }
+  if (!raw) return;
+  try {
+    var p = JSON.parse(raw);
+    if (p && Array.isArray(p.columns) && Array.isArray(p.cards) && p.columns.length) {
+      state.columns = p.columns;
+      state.cards = p.cards;
+    }
+  } catch (e) {
+    loadErr = 'Saved data on this browser could not be read (it looks damaged). Your data has not been changed. Restore from your latest backup to fix this.';
+  }
+}
+
+// Returns true when persisted; shows a visible error when storage fails.
+function save() {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify({ v: 1, columns: state.columns, cards: state.cards }));
+    if (saveErrVisible) { saveErrVisible = false; }
+    return true;
+  } catch (e) {
+    saveErrVisible = true;
+    render();
+    var el = document.getElementById('lb-saveerr');
+    if (el) el.textContent = "Could not save - this browser's storage is full or blocked. Download a backup from Options now so you do not lose data.";
+    return false;
+  }
+}
+
+function usedBytes() {
+  try { return JSON.stringify({ columns: state.columns, cards: state.cards }).length; } catch (e) { return 0; }
+}
+
+// ---------- backup / restore ----------
+function runBackup() {
+  var name = 'loan-board-backup-' + today() + '.json';
+  try {
+    var payload = JSON.stringify({ app: 'loan-board', v: 2, exported: new Date().toISOString(), columns: state.columns, cards: state.cards });
+    var url = URL.createObjectURL(new Blob([payload], { type: 'application/json' }));
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function() { URL.revokeObjectURL(url); }, 30000);
+    setStatus('Backup downloaded: ' + name + '. Check your Downloads folder.');
+  } catch (e) {
+    setStatus('Backup could not be started on this device. Please try again.', true);
+  }
+}
+
+function parseBackup(text) {
+  var p;
+  try { p = JSON.parse(text); } catch (e) { return 'This is not a valid backup file.'; }
+  if (!p || p.app !== 'loan-board' || !Array.isArray(p.columns) || !Array.isArray(p.cards)) return 'This file is not a backup from this app.';
+  var cols = [];
+  for (var i = 0; i < p.columns.length; i++) {
+    var c = p.columns[i];
+    if (!Array.isArray(c) || typeof c[0] !== 'string' || typeof c[1] !== 'string') return 'The columns in this file are damaged.';
+    if (!cols.some(function(x) { return x[0] === c[0]; })) cols.push([c[0].slice(0, 12), c[1].slice(0, 30)]);
+  }
+  if (cols.length === 0 || cols.length > MAX_COLS) return 'The columns in this file are not valid.';
+  var cards = [];
+  for (var j = 0; j < p.cards.length; j++) {
+    var r = p.cards[j];
+    if (!Array.isArray(r) || typeof r[1] !== 'string') return 'The cards in this file are damaged.';
+    var col = cols.some(function(c) { return c[0] === r[5]; }) ? r[5] : cols[0][0];
+    var notes = [];
+    if (Array.isArray(r[7])) {
+      notes = r[7].filter(function(n) { return Array.isArray(n) && typeof n[1] === 'string'; })
+                  .map(function(n) { return [Number(n[0]) || 0, n[1].slice(0, 400)]; });
+    }
+    cards.push([String(r[0] || uid()).slice(0, 12), r[1].slice(0, 80), String(r[2] || '').slice(0, 20),
+      Math.max(0, Number(r[3]) || 0), String(r[4] || '').slice(0, 60), col, isDate(r[6]) ? r[6] : '', notes]);
+  }
+  return { cols: cols, cards: cards };
+}
+
+// ---------- small DOM helper ----------
+function h(tag, attrs) {
+  var el = document.createElement(tag);
+  if (attrs) {
+    for (var k in attrs) {
+      if (k === 'class') el.className = attrs[k];
+      else if (k === 'text') el.textContent = attrs[k];
+      else if (k === 'html') el.innerHTML = attrs[k];
+      else if (k.slice(0, 2) === 'on' && typeof attrs[k] === 'function') el.addEventListener(k.slice(2), attrs[k]);
+      else if (attrs[k] !== null && attrs[k] !== undefined && attrs[k] !== false) el.setAttribute(k, attrs[k] === true ? '' : attrs[k]);
+    }
+  }
+  for (var i = 2; i < arguments.length; i++) {
+    var ch = arguments[i];
+    if (ch === null || ch === undefined || ch === false) continue;
+    if (Array.isArray(ch)) ch.forEach(function(x) { if (x) el.appendChild(x); });
+    else if (typeof ch === 'string') el.appendChild(document.createTextNode(ch));
+    else el.appendChild(ch);
+  }
+  return el;
+}
+
+// ---------- app state ----------
+var statusMsg = '';
+var statusIsErr = false;
+var statusTimer = null;
+var menuOpen = false;
+var dismissed = false;
+var drag = null; // {id, label, over, x, y}
+
+function setStatus(msg, isErr) {
+  statusMsg = msg; statusIsErr = !!isErr;
+  if (statusTimer) clearTimeout(statusTimer);
+  statusTimer = setTimeout(function() { statusMsg = ''; render(); }, 8000);
+  render();
+}
+
+function columns() { return state.columns.length ? state.columns : DEFAULT_COLS; }
+function cardsIn(cid) { return state.cards.filter(function(c) { return c[5] === cid; }); }
+function colName(id) { var c = columns().find(function(x) { return x[0] === id; }); return c ? c[1] : ''; }
+function findCard(id) { return state.cards.find(function(c) { return c[0] === id; }) || null; }
+
+function moveCard(id, colId) {
+  var c = findCard(id);
+  if (!c || c[5] === colId) return;
+  state.cards = state.cards.filter(function(x) { return x[0] !== id; });
+  state.cards.push([c[0], c[1], c[2], c[3], c[4], colId, c[6], c[7]]);
+  save(); render();
+}
+function updateCard(c) {
+  state.cards = state.cards.map(function(x) { return x[0] === c[0] ? c : x; });
+  save(); render();
+}
+
+// ---------- modal ----------
+function openModal(sheetEl, onClose) {
+  var root = document.getElementById('modal-root');
+  root.innerHTML = '';
+  var overlay = h('div', { class: 'lb-overlay', onclick: function(e) { if (e.target === overlay) close(); } });
+  overlay.appendChild(sheetEl);
+  root.appendChild(overlay);
+  function close() { root.innerHTML = ''; if (onClose) onClose(); }
+  return close;
+}
+function sheet(titleText, closeFn) {
+  return h('div', { class: 'lb-sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': titleText },
+    h('div', { class: 'lb-sheet-h' },
+      h('strong', { text: titleText }),
+      h('button', { class: 'lb-x', 'aria-label': 'Close', onclick: closeFn }, '\u2715')));
+}
+
+// ---------- card editor ----------
+function openCardEditor(card, startCol) {
+  var close;
+  var name = h('input', { value: card ? card[1] : '', maxLength: 80, autocomplete: 'off' });
+  var phone = h('input', { type: 'tel', inputMode: 'tel', value: card ? card[2] : '', maxLength: 20 });
+  var amount = h('input', { inputMode: 'numeric', value: card && card[3] ? String(card[3]) : '', placeholder: 'e.g. 2500000' });
+  var amtHint = h('small', {});
+  amount.addEventListener('input', function() {
+    amount.value = amount.value.replace(/[^\d,]/g, '');
+    var amt = Math.max(0, Math.round(Number(amount.value.replace(/,/g, '')) || 0));
+    amtHint.textContent = amt > 0 ? money(amt) : '';
+  });
+  var branch = h('input', { value: card ? card[4] : '', maxLength: 60 });
+  var colSel = h('select', {}, columns().map(function(c) {
+    return h('option', { value: c[0], selected: (card ? card[5] : startCol) === c[0] ? true : null }, c[1]);
+  }));
+  var dateIn = h('input', { type: 'date', value: card ? card[6] : '' });
+  var notes = card ? card[7].slice() : [];
+  var draft = h('textarea', { maxLength: 400, rows: 3, placeholder: 'Add a note\u2026' });
+  var notesBox = h('div', {});
+  function renderNotes() {
+    notesBox.innerHTML = '';
+    if (!notes.length) { notesBox.appendChild(h('p', { class: 'lb-empty', text: 'No notes yet' })); return; }
+    notes.slice().reverse().forEach(function(n) {
+      notesBox.appendChild(h('div', { class: 'lb-note' },
+        h('small', { text: n[0] ? new Date(n[0]).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) : '' }),
+        h('p', { text: n[1] }),
+        h('button', { class: 'lb-link', onclick: function() { notes = notes.filter(function(x) { return x !== n; }); renderNotes(); } }, 'Delete note')));
+    });
+  }
+  renderNotes();
+  var confirmDel = false;
+  var delBtn = h('button', { class: 'lb-btn', onclick: function() {
+    if (!confirmDel) { confirmDel = true; delBtn.textContent = 'Tap again to delete'; delBtn.classList.add('lb-danger'); return; }
+    state.cards = state.cards.filter(function(x) { return x[0] !== card[0]; });
+    save(); close(); render();
+  } }, 'Delete');
+  function submit() {
+    if (!name.value.trim()) { name.focus(); return; }
+    var finalNotes = draft.value.trim() ? notes.concat([[Date.now(), draft.value.trim().slice(0, 400)]]) : notes;
+    var amt = Math.max(0, Math.round(Number(amount.value.replace(/,/g, '')) || 0));
+    var c = [card ? card[0] : uid(), name.value.trim(), phone.value.trim(), amt, branch.value.trim(), colSel.value, dateIn.value, finalNotes];
+    if (card) updateCard(c); else { state.cards = state.cards.concat([c]); save(); render(); }
+    close();
+  }
+  var sh = sheet(card ? 'Edit card' : 'New card', function() { close(); });
+  sh.appendChild(h('label', {}, 'Name', name));
+  sh.appendChild(h('label', {}, 'Phone', phone));
+  sh.appendChild(h('label', {}, 'Expected loan amount (\u20B9)', amount, amtHint));
+  sh.appendChild(h('label', {}, 'Branch', branch));
+  sh.appendChild(h('label', {}, 'Column', colSel));
+  sh.appendChild(h('label', {}, 'Contact again on (optional)',
+    h('div', { class: 'lb-row' }, dateIn,
+      h('button', { class: 'lb-mini', onclick: function() { dateIn.value = ''; } }, 'Clear'))));
+  sh.appendChild(h('div', { class: 'lb-notes' }, h('strong', { text: 'Notes' }), notesBox, draft));
+  var actions = h('div', { class: 'lb-actions' },
+    h('button', { class: 'lb-btn lb-primary', onclick: submit }, 'Save'));
+  if (card && card[2]) actions.appendChild(h('a', { class: 'lb-btn', href: 'tel:' + card[2] }, 'Call'));
+  if (card) actions.appendChild(delBtn);
+  sh.appendChild(actions);
+  close = openModal(sh);
+  if (!card) name.focus();
+}
+
+// ---------- column editor ----------
+function openColEditor(colId) {
+  var close;
+  var col = columns().find(function(c) { return c[0] === colId; }) || null;
+  var name = h('input', { value: col ? col[1] : '', maxLength: 30, autofocus: true });
+  function commit() {
+    var v = name.value.trim();
+    if (!v) return;
+    if (col) state.columns = columns().map(function(c) { return c[0] === col[0] ? [c[0], v] : c; });
+    else state.columns = columns().concat([[uid().slice(-6), v]]);
+    save(); close(); render();
+  }
+  name.addEventListener('keydown', function(e) { if (e.key === 'Enter') commit(); });
+  var sh = sheet(col ? 'Edit column' : 'New column', function() { close(); });
+  sh.appendChild(h('label', {}, 'Column name', name));
+  var idx = col ? columns().findIndex(function(c) { return c[0] === col[0]; }) : -1;
+  function shift(dir) {
+    var j = idx + dir;
+    if (j < 0 || j >= columns().length) return;
+    var n = columns().slice();
+    var tmp = n[idx]; n[idx] = n[j]; n[j] = tmp;
+    state.columns = n;
+    save(); close(); render(); openColEditor(col[0]);
+  }
+  sh.appendChild(h('div', { class: 'lb-actions' },
+    h('button', { class: 'lb-btn lb-primary', onclick: commit }, col ? 'Save name' : 'Add column'),
+    col ? h('button', { class: 'lb-btn', disabled: idx <= 0 ? true : null, onclick: function() { shift(-1); } }, '\u2190 Move left') : null,
+    col ? h('button', { class: 'lb-btn', disabled: idx >= columns().length - 1 ? true : null, onclick: function() { shift(1); } }, 'Move right \u2192') : null));
+  if (col && columns().length > 1) {
+    var n = cardsIn(col[0]).length;
+    var others = columns().filter(function(c) { return c[0] !== col[0]; });
+    var target = h('select', {}, others.map(function(c) { return h('option', { value: c[0] }, c[1]); })
+      .concat([h('option', { value: '' }, 'Delete these cards too')]));
+    var delArmed = false;
+    var zone = h('div', { class: 'lb-danger-zone' }, h('strong', { text: 'Delete this column' }));
+    if (n > 0) zone.appendChild(h('label', {}, 'It has ' + n + ' card' + (n === 1 ? '' : 's') + '. Move them to', target));
+    else zone.appendChild(h('p', { class: 'lb-empty', text: 'This column is empty.' }));
+    var delBtn = h('button', { class: 'lb-btn', onclick: function() {
+      if (!delArmed) {
+        delArmed = true;
+        delBtn.classList.add('lb-danger');
+        delBtn.textContent = (n > 0 && !target.value) ? 'Tap again to delete column and ' + n + ' card' + (n === 1 ? '' : 's') : 'Tap again to delete column';
+        return;
+      }
+      if (target.value) {
+        state.cards = state.cards.map(function(c) { return c[5] === col[0] ? [c[0], c[1], c[2], c[3], c[4], target.value, c[6], c[7]] : c; });
+      } else {
+        state.cards = state.cards.filter(function(c) { return c[5] !== col[0]; });
+      }
+      state.columns = columns().filter(function(c) { return c[0] !== col[0]; });
+      save(); close(); render();
+    } }, 'Delete column');
+    zone.appendChild(delBtn);
+    sh.appendChild(zone);
+  }
+  if (col && columns().length === 1) {
+    sh.appendChild(h('p', { class: 'lb-empty', text: 'You need at least one column, so this one cannot be deleted. You can rename it.' }));
+  }
+  close = openModal(sh);
+  name.focus();
+}
+
+// ---------- restore modal ----------
+function openRestore() {
+  var close;
+  var info = h('p', { class: 'lb-warn', role: 'alert', style: 'display:none' });
+  var confirmBox = h('div', { style: 'display:none' });
+  var fileIn = h('input', { type: 'file', accept: 'application/json,.json' });
+  fileIn.addEventListener('change', function() {
+    var f = fileIn.files && fileIn.files[0];
+    fileIn.value = '';
+    confirmBox.style.display = 'none'; confirmBox.innerHTML = '';
+    info.style.display = 'none';
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function() {
+      var r = parseBackup(String(reader.result || ''));
+      if (typeof r === 'string') { info.textContent = r; info.style.display = ''; return; }
+      confirmBox.innerHTML = '';
+      confirmBox.appendChild(h('p', { text: 'Found ' + r.cols.length + ' column' + (r.cols.length === 1 ? '' : 's') + ' and ' + r.cards.length + ' card' + (r.cards.length === 1 ? '' : 's') + '. Replace current data?' }));
+      confirmBox.appendChild(h('div', { class: 'lb-actions' },
+        h('button', { class: 'lb-btn lb-danger', onclick: function() {
+          state.columns = r.cols; state.cards = r.cards;
+          dismissed = false;
+          if (save()) { close(); setStatus('Restored ' + r.cards.length + ' card' + (r.cards.length === 1 ? '' : 's') + ' from backup.'); }
+          else { info.textContent = 'Could not restore: not enough storage in this browser.'; info.style.display = ''; }
+        } }, 'Yes, replace everything'),
+        h('button', { class: 'lb-btn', onclick: function() { close(); } }, 'Cancel')));
+      confirmBox.style.display = '';
+    };
+    reader.onerror = function() { info.textContent = 'This file could not be read. Please choose the backup file again.'; info.style.display = ''; };
+    reader.readAsText(f);
+  });
+  var sh = sheet('Restore from backup', function() { close(); });
+  sh.appendChild(h('p', { class: 'lb-cap', text: 'Choose the backup file you saved earlier (it ends in .json). This replaces everything currently on this browser.' }));
+  sh.appendChild(h('label', {}, 'Backup file', fileIn));
+  sh.appendChild(confirmBox);
+  sh.appendChild(info);
+  close = openModal(sh);
+}
+
+// ---------- drag and drop ----------
+var boardEl = null;
+var ghostEl = null;
+function startDrag(e, card) {
+  e.preventDefault();
+  try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointers in tests */ }
+  drag = { id: card[0], label: card[1], over: null, x: e.clientX, y: e.clientY };
+  ghostEl = h('div', { class: 'lb-ghost', text: card[1] });
+  document.body.appendChild(ghostEl);
+  placeGhost();
+  document.querySelectorAll('.lb-card').forEach(function(el) {
+    if (el.getAttribute('data-card') === card[0]) el.classList.add('is-drag');
+  });
+  window.addEventListener('pointermove', onDragMove);
+  window.addEventListener('pointerup', onDragEnd);
+  window.addEventListener('pointercancel', onDragCancel);
+}
+function placeGhost() {
+  if (!drag || !ghostEl) return;
+  ghostEl.style.transform = 'translate(' + (drag.x - 60) + 'px, ' + (drag.y - 24) + 'px)';
+}
+function onDragMove(e) {
+  if (!drag) return;
+  drag.x = e.clientX; drag.y = e.clientY;
+  placeGhost();
+  var el = document.elementFromPoint(e.clientX, e.clientY);
+  var colEl = el && el.closest ? el.closest('[data-col]') : null;
+  var id = colEl ? colEl.getAttribute('data-col') : null;
+  if (id !== drag.over) {
+    drag.over = id;
+    document.querySelectorAll('.lb-col').forEach(function(c) {
+      c.classList.toggle('is-over', c.getAttribute('data-col') === id);
+    });
+  }
+  if (boardEl) {
+    var r = boardEl.getBoundingClientRect();
+    if (e.clientX < r.left + 40) boardEl.scrollLeft -= 14;
+    else if (e.clientX > r.right - 40) boardEl.scrollLeft += 14;
+  }
+}
+function endDragCommon(cancel) {
+  if (!drag) return;
+  var d = drag;
+  drag = null;
+  window.removeEventListener('pointermove', onDragMove);
+  window.removeEventListener('pointerup', onDragEnd);
+  window.removeEventListener('pointercancel', onDragCancel);
+  if (ghostEl) { ghostEl.remove(); ghostEl = null; }
+  var over = d.over;
+  render();
+  if (!cancel && over) moveCard(d.id, over);
+}
+function onDragEnd() { endDragCommon(false); }
+function onDragCancel() { endDragCommon(true); }
+
+// ---------- render ----------
+function render() {
+  var app = document.getElementById('app');
+  var cols = columns();
+  var t = today();
+  document.getElementById('lb-sub').textContent = state.cards.length + ' card' + (state.cards.length === 1 ? '' : 's') + ' \u00B7 ' + cols.length + ' column' + (cols.length === 1 ? '' : 's');
+  app.innerHTML = '';
+
+  // top bar
+  var menu = h('div', { class: 'lb-menu', role: 'menu', style: menuOpen ? '' : 'display:none' },
+    h('button', { role: 'menuitem', onclick: function() { menuOpen = false; render(); runBackup(); } }, 'Backup (download all data)'),
+    h('button', { role: 'menuitem', onclick: function() { menuOpen = false; render(); openRestore(); } }, 'Restore from backup'));
+  app.appendChild(h('div', { class: 'lb-top' },
+    h('button', { class: 'lb-btn lb-primary', onclick: function() { openCardEditor(null, cols[0][0]); } }, '+ New card'),
+    h('button', { class: 'lb-btn', disabled: cols.length >= MAX_COLS ? true : null, onclick: function() { openColEditor(null); } }, '+ Column'),
+    h('div', { class: 'lb-menu-wrap' },
+      h('button', { class: 'lb-btn', 'aria-label': 'Options', 'aria-expanded': menuOpen ? 'true' : 'false', onclick: function(e) { e.stopPropagation(); menuOpen = !menuOpen; render(); } }, '\u22EF Options'),
+      menu)));
+
+  if (statusMsg) app.appendChild(h('p', { class: statusIsErr ? 'lb-warn' : 'lb-cap', role: 'status', text: statusMsg }));
+  if (loadErr) app.appendChild(h('p', { class: 'lb-warn', role: 'alert', text: loadErr }));
+  app.appendChild(h('p', { class: 'lb-warn', role: 'alert', id: 'lb-saveerr', style: saveErrVisible ? '' : 'display:none' }));
+
+  // reminder banner
+  var due = state.cards.filter(function(c) { return c[6] && c[6] <= t; }).sort(function(a, b) { return a[6] < b[6] ? -1 : 1; });
+  if (due.length && !dismissed) {
+    var banner = h('div', { class: 'lb-remind', role: 'alert' },
+      h('div', { class: 'lb-remind-h' },
+        h('strong', { text: '\uD83D\uDCDE Call today (' + due.length + ')' }),
+        h('button', { class: 'lb-x', 'aria-label': 'Close reminder', onclick: function() { dismissed = true; render(); } }, '\u2715')));
+    due.forEach(function(c) {
+      var row = h('div', { class: 'lb-remind-row' },
+        h('button', { class: 'lb-link', onclick: function() { openCardEditor(c); } }, c[1]),
+        h('span', { class: c[6] < t ? 'lb-late' : '', text: (c[6] < t ? 'Overdue \u00B7 ' : 'Today \u00B7 ') + prettyDate(c[6]) }));
+      if (c[2]) row.appendChild(h('a', { class: 'lb-call', href: 'tel:' + c[2] }, 'Call'));
+      row.appendChild(h('button', { class: 'lb-mini', onclick: function() { updateCard([c[0], c[1], c[2], c[3], c[4], c[5], inDays(7), c[7]]); } }, '+7 days'));
+      row.appendChild(h('button', { class: 'lb-mini', onclick: function() { updateCard([c[0], c[1], c[2], c[3], c[4], c[5], '', c[7]]); } }, 'Done'));
+      banner.appendChild(row);
+    });
+    app.appendChild(banner);
+  }
+
+  // board
+  boardEl = h('div', { class: 'lb-board' });
+  cols.forEach(function(col) {
+    var cid = col[0], name = col[1];
+    var items = cardsIn(cid);
+    var section = h('section', { class: 'lb-col', 'data-col': cid, 'aria-label': name },
+      h('div', { class: 'lb-col-h' },
+        h('button', { class: 'lb-col-name', 'aria-label': 'Edit column ' + name, onclick: function() { openColEditor(cid); } }, name),
+        h('span', { class: 'lb-count', text: String(items.length) }),
+        h('button', { class: 'lb-add', 'aria-label': 'Add card to ' + name, onclick: function() { openCardEditor(null, cid); } }, '+')));
+    if (!items.length) section.appendChild(h('p', { class: 'lb-empty', text: 'Drop cards here' }));
+    items.forEach(function(c) {
+      var main = h('div', { class: 'lb-card-main', role: 'button', tabindex: '0', onclick: function() { openCardEditor(c); }, onkeydown: function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCardEditor(c); } } },
+        h('span', { class: 'lb-name', text: c[1] }));
+      if (c[2]) main.appendChild(h('a', { class: 'lb-call-inline', href: 'tel:' + c[2], onclick: function(e) { e.stopPropagation(); } }, '\uD83D\uDCDE ' + c[2]));
+      if (c[3] > 0) main.appendChild(h('span', { class: 'lb-meta', text: money(c[3]) }));
+      if (c[4]) main.appendChild(h('span', { class: 'lb-meta', text: c[4] }));
+      if (c[6]) main.appendChild(h('span', { class: 'lb-date' + (c[6] <= t ? ' lb-late' : ''), text: 'Call on ' + prettyDate(c[6]) }));
+      if (c[7].length) main.appendChild(h('span', { class: 'lb-notes-n', text: '\uD83D\uDCDD ' + c[7].length }));
+      var handle = h('div', { class: 'lb-handle', role: 'button', 'aria-label': 'Drag ' + c[1] + ' to another column', title: 'Drag to move' }, '\u283F');
+      handle.addEventListener('pointerdown', function(e) { startDrag(e, c); });
+      section.appendChild(h('article', { class: 'lb-card', 'data-card': c[0] }, main, handle));
+    });
+    boardEl.appendChild(section);
+  });
+  boardEl.appendChild(h('button', { class: 'lb-col lb-newcol', disabled: cols.length >= MAX_COLS ? true : null, onclick: function() { openColEditor(null); } }, '+ Add column'));
+  app.appendChild(boardEl);
+
+  // storage usage caption
+  var quota = 5 * 1024 * 1024;
+  var used = usedBytes();
+  app.appendChild(h('p', { class: 'lb-cap', text: 'Storage used: about ' + Math.round(used / 1024) + ' KB (' + Math.round(used / quota * 100) + '% of this browser\u2019s ~5 MB limit). Data stays on this device/browser only \u2014 download a backup from Options now and then.' }));
+}
+
+// close the options menu on any outside tap
+document.addEventListener('click', function() { if (menuOpen) { menuOpen = false; render(); } });
+
+load();
+render();
+</script>
+</body>
+</html>
